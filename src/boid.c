@@ -2,7 +2,7 @@
 #include <memory.h>
 #include <math.h>
 
-#define VECTOR_LENGTH 20
+#define VECTOR_LENGTH 10
 
 typedef struct vec2{
 	int x,y;
@@ -240,4 +240,40 @@ vec2 avgPosFromLLBoid(LLBoid *self){
 		.y = sumOfPos.y/counter
 	};
 	return returnValue;
+}
+//[]
+vec2 avgPositionDiff(LLBoid *selfList, boid self){
+	//get postion differen from own --> avg
+	//return
+	LLBoid* temp = selfList;
+	int counter = 0;
+	vec2 sumOfPos = {
+		.x = 0,
+		.y = 0
+	};
+
+	while(temp->nextLLBoid != NULL){
+		counter++;
+		sumOfPos.x += abs( self.postion.x - selfList->content.postion.x );
+		sumOfPos.y += abs( self.postion.y - selfList->content.postion.y );
+		temp = selfList->nextLLBoid;
+	}
+
+	sumOfPos.x = sumOfPos.x/counter;
+	sumOfPos.y = sumOfPos.y/counter;
+
+	return sumOfPos;
+}
+//[]
+vec2 nextPosition(LLBoid *selfList, boid self){
+	vec2 sumOfPos = {
+		.x = 0,
+		.y = 0
+	};
+
+	//speration --> avgPosDif *-1 * factor
+	//allignment --> avg from avgRotation and self
+	//
+
+	return sumOfPos;
 }
