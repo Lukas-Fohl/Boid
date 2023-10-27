@@ -27,6 +27,8 @@ void LLBoidSetAt(LLBoid* self, int index, boid item);
 
 int LLBoidLen(LLBoid* self);
 
+void LLBoidPrint(LLBoid *selfList);
+
 vec2 normalVec2(vec2 input);
 
 vec2 avgRotFromLLBoid(LLBoid *self);

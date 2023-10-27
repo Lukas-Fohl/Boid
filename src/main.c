@@ -2,6 +2,8 @@
 
 #include "boid.h"
 
+#define BOID_AMOUNT 50
+
 void test(){
 	LLBoid x = LLBoidStdConstr();
 
@@ -42,7 +44,26 @@ int main(){
 		.y = 2
 	};
 
-	printf("%i\n",normalVec2(positionVector).x);
-	printf("%i\n",normalVec2(positionVector).y);
+	LLBoid n = LLBoidStdConstr();
+
+	for(int i = 0; i < BOID_AMOUNT; i++){
+		if(i == 48){
+			rotationVector.x = 5;
+		}else{
+			rotationVector.x = 20;
+		}
+		boid *x = (boid*)malloc(sizeof(struct boid));
+		x->rotation = rotationVector;
+		x->postion = positionVector;
+		LLBoidAppend(&n,*x);
+	}
+
+	//LLBoidPop(&n,0);
+
+	LLBoidPrint(&n);
+
+	//LLBoidLen(&n);
+	//printf("%i\n",LLBoidLen(&n));
+
 	return 0;
 }

@@ -38,6 +38,7 @@ boid boidConstr(vec2 postionInput, vec2 rotationInput){
 }
 //[x]
 LLBoid LLBoidStdConstr(){
+	//TODO malloc
 	LLBoid temp;
 	vec2 tempVec2 = {
 		.x = 0,
@@ -52,6 +53,7 @@ LLBoid LLBoidStdConstr(){
 }
 //[x]
 LLBoid LLBoidConstr(boid boidInput){
+	//TODO malloc
 	LLBoid temp;
 	temp.content = boidInput;
 	temp.nextLLBoid = NULL;
@@ -60,18 +62,21 @@ LLBoid LLBoidConstr(boid boidInput){
 //[x]
 void LLBoidAppend(LLBoid* self, boid item){
 	LLBoid* temp = self;
-	int counter = 0;
 	//find last element
-	while(temp->nextLLBoid != NULL){
-		counter++;
-		temp = self->nextLLBoid;
+	while(1){
+		if(temp->nextLLBoid != NULL){
+			temp = temp->nextLLBoid;
+		}else{
+			break;
+		}
 	}
 	//set next-ptr to new LLBoid
 	//set content of new boid to $item
 	LLBoid* boidItem = (LLBoid*)malloc(sizeof(LLBoid));
 	*boidItem = LLBoidConstr(item);
-	LLBoid* LLBoidTemp = boidItem;
-	temp->nextLLBoid = LLBoidTemp;
+	//LLBoid* LLBoidTemp = boidItem;
+	//temp->nextLLBoid = LLBoidTemp;
+	temp->nextLLBoid = boidItem;
 	return;
 }
 //[x]
@@ -83,7 +88,7 @@ LLBoid LLBoidGetAt(LLBoid* self, int index){
 			break;
 		}
 		counter++;
-		temp = self->nextLLBoid;
+		temp = temp->nextLLBoid;
 	}
 	//find last element
 	//iter list return if i = $index
@@ -91,11 +96,13 @@ LLBoid LLBoidGetAt(LLBoid* self, int index){
 }
 //[x]
 void LLBoidPop(LLBoid* self, int index){
-	if(index < 1 || self->nextLLBoid == NULL){
+	if(index == 0 && self->nextLLBoid != NULL){
+		//TODO --> free if malloc
+		//LLBoid* temp = self;
+		*self = *self->nextLLBoid;
+		//free(temp);
 		return;
-	}else if(index == 0 && self->nextLLBoid != NULL){
-		self = self->nextLLBoid;
-		free(self);
+	}else if(index < 1 || self->nextLLBoid == NULL){
 		return;
 	}
 
@@ -106,13 +113,14 @@ void LLBoidPop(LLBoid* self, int index){
 	LLBoid* temp = self;
 	int counter = 0;
 	while(temp->nextLLBoid != NULL){
-		if(counter == (index-1)){
+		if(counter-1 == index){
+			LLBoid *tempPointer = temp->nextLLBoid;
 			temp->nextLLBoid = temp->nextLLBoid->nextLLBoid;
-			free(temp->nextLLBoid);
+			free(tempPointer);
 			return;
 		}
 		counter++;
-		temp = self->nextLLBoid;
+		temp = temp->nextLLBoid;
 	}
 	//if last item = item to change - not do while if list len = 1
 
@@ -125,12 +133,12 @@ void LLBoidSetAt(LLBoid* self, int index, boid item){
 	int counter = 0;
 	while(temp->nextLLBoid != NULL){
 		if(counter == index){
-			self->content = item;
+			temp->content = item;
 			return;
 			//break;
 		}
 		counter++;
-		temp = self->nextLLBoid;
+		temp = temp->nextLLBoid;
 	}
 	//if last item = item to change - not do while if list len = 1
 	temp->content = item;
@@ -143,9 +151,27 @@ int LLBoidLen(LLBoid* self){
 	int counter = 1; //get real length
 	while(temp->nextLLBoid != NULL){
 		counter++;
-		temp = self->nextLLBoid;
+		temp = temp->nextLLBoid;
 	}
 	return counter;
+}
+//[x]
+void LLBoidPrint(LLBoid *selfList){
+	LLBoid* temp = selfList;
+	int counter = 0;
+	while(1){
+		printf("%i: \n",counter);
+		printf("\trotation:\n");
+		printf("\t\tx::%i \t | \t %i\n",temp->content.rotation.x,temp->content.rotation.y);
+		printf("\n");
+		printf("\tposition:\n");
+		printf("\t\tx::%i \t | \t %i\n",temp->content.postion.x,temp->content.postion.y);
+		if(temp->nextLLBoid == NULL){
+			break;
+		}
+		temp = temp->nextLLBoid;
+		counter++;
+	};
 }
 //[x]
 vec2 normalVec2(vec2 input){
@@ -210,7 +236,7 @@ vec2 avgRotFromLLBoid(LLBoid *self){
 		counter++;
 		sumOfRot.x += self->content.rotation.x;
 		sumOfRot.y += self->content.rotation.y;
-		temp = self->nextLLBoid;
+		temp = temp->nextLLBoid;
 	}
 
 	vec2 returnValue = {
@@ -232,7 +258,7 @@ vec2 avgPosFromLLBoid(LLBoid *self){
 		counter++;
 		sumOfPos.x += self->content.postion.x;
 		sumOfPos.y += self->content.postion.y;
-		temp = self->nextLLBoid;
+		temp = temp->nextLLBoid;
 	}
 
 	vec2 returnValue = {
@@ -241,7 +267,7 @@ vec2 avgPosFromLLBoid(LLBoid *self){
 	};
 	return returnValue;
 }
-//[]
+//[x]
 vec2 avgPositionDiff(LLBoid *selfList, boid self){
 	//get postion differen from own --> avg
 	//return
@@ -256,7 +282,7 @@ vec2 avgPositionDiff(LLBoid *selfList, boid self){
 		counter++;
 		sumOfPos.x += abs( self.postion.x - selfList->content.postion.x );
 		sumOfPos.y += abs( self.postion.y - selfList->content.postion.y );
-		temp = selfList->nextLLBoid;
+		temp = temp->nextLLBoid;
 	}
 
 	sumOfPos.x = sumOfPos.x/counter;
@@ -266,7 +292,7 @@ vec2 avgPositionDiff(LLBoid *selfList, boid self){
 }
 //[]
 vec2 nextPosition(LLBoid *selfList, boid self){
-	vec2 sumOfPos = {
+	vec2 temp = {
 		.x = 0,
 		.y = 0
 	};
@@ -275,5 +301,5 @@ vec2 nextPosition(LLBoid *selfList, boid self){
 	//allignment --> avg from avgRotation and self
 	//
 
-	return sumOfPos;
+	return temp;
 }
