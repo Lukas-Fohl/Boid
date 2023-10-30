@@ -1,6 +1,8 @@
 #ifndef BIOD_H
 #define BOID_H
 
+#include <stdbool.h>
+
 #include "boid.c"
 
 typedef struct vec2 vec2;
@@ -27,7 +29,7 @@ void LLBoidSetAt(LLBoid* self, int index, boid item);
 
 int LLBoidLen(LLBoid* self);
 
-void LLBoidPrint(LLBoid *selfList);
+void LLBoidPrint(LLBoid *selfList, bool printPosition, bool printRotation);
 
 vec2 normalVec2(vec2 input);
 

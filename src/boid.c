@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <math.h>
+#include <stdbool.h>
 
 #define VECTOR_LENGTH 10
 
@@ -16,7 +17,7 @@ typedef struct LLBoid{
 	boid content;
 	struct LLBoid* nextLLBoid;
 }LLBoid;
-//[x]
+
 boid boidStdConstr(){
 	vec2 tempVec2 = {
 		.x = 0,
@@ -28,7 +29,7 @@ boid boidStdConstr(){
 	};
 	return tempBoid;
 }
-//[x]
+
 boid boidConstr(vec2 postionInput, vec2 rotationInput){
 	boid tempBoid = {
 		.postion = postionInput,
@@ -36,7 +37,7 @@ boid boidConstr(vec2 postionInput, vec2 rotationInput){
 	};
 	return tempBoid;
 }
-//[x]
+
 LLBoid LLBoidStdConstr(){
 	//TODO malloc
 	LLBoid temp;
@@ -51,7 +52,7 @@ LLBoid LLBoidStdConstr(){
 	temp.nextLLBoid = NULL;
 	return temp;
 }
-//[x]
+
 LLBoid LLBoidConstr(boid boidInput){
 	//TODO malloc
 	LLBoid temp;
@@ -59,7 +60,7 @@ LLBoid LLBoidConstr(boid boidInput){
 	temp.nextLLBoid = NULL;
 	return temp;
 }
-//[x]
+
 void LLBoidAppend(LLBoid* self, boid item){
 	LLBoid* temp = self;
 	//find last element
@@ -79,25 +80,32 @@ void LLBoidAppend(LLBoid* self, boid item){
 	temp->nextLLBoid = boidItem;
 	return;
 }
-//[x]
+
 LLBoid LLBoidGetAt(LLBoid* self, int index){
 	LLBoid* temp = self;
 	int counter = 0;
-	while(temp->nextLLBoid != NULL){
+	while(1){
 		if(counter == index){
 			break;
 		}
 		counter++;
+		if(temp->nextLLBoid == NULL){
+			temp->content.postion.x = 0;
+			temp->content.postion.y = 0;
+
+			temp->content.rotation.x = 0;
+			temp->content.rotation.y = 0;
+			break;
+		}
 		temp = temp->nextLLBoid;
 	}
 	//find last element
 	//iter list return if i = $index
 	return *temp;
 }
-//[x]
+
 void LLBoidPop(LLBoid* self, int index){
 	if(index == 0 && self->nextLLBoid != NULL){
-		//TODO --> free if malloc
 		//LLBoid* temp = self;
 		*self = *self->nextLLBoid;
 		//free(temp);
@@ -106,66 +114,79 @@ void LLBoidPop(LLBoid* self, int index){
 		return;
 	}
 
-	//find index
-	//change pointer from last to pointer of index-element
-	//free(index-element)
-
 	LLBoid* temp = self;
 	int counter = 0;
-	while(temp->nextLLBoid != NULL){
-		if(counter-1 == index){
+	while(1){
+		if(counter == index-1){
 			LLBoid *tempPointer = temp->nextLLBoid;
+			if(temp->nextLLBoid == NULL){
+				return;
+			}
 			temp->nextLLBoid = temp->nextLLBoid->nextLLBoid;
 			free(tempPointer);
 			return;
 		}
-		counter++;
+		if(temp->nextLLBoid == NULL){
+			break;
+		}
 		temp = temp->nextLLBoid;
+		counter++;
 	}
-	//if last item = item to change - not do while if list len = 1
 
 	return;
 }
-//[x]
+
 void LLBoidSetAt(LLBoid* self, int index, boid item){
 	//find element @ index --> change content to $item
 	LLBoid* temp = self;
 	int counter = 0;
-	while(temp->nextLLBoid != NULL){
+	while(1){
 		if(counter == index){
 			temp->content = item;
 			return;
 			//break;
 		}
+
 		counter++;
+		if(temp->nextLLBoid == NULL){
+			break;
+		}
 		temp = temp->nextLLBoid;
 	}
 	//if last item = item to change - not do while if list len = 1
-	temp->content = item;
+	//temp->content = item;
 	return;
 }
-//[x]
+
 int LLBoidLen(LLBoid* self){
 	//iter list --> when pointer == null return i
 	LLBoid* temp = self;
-	int counter = 1; //get real length
-	while(temp->nextLLBoid != NULL){
+	int counter = 0; //get real length
+	while(1){
 		counter++;
+		if(temp->nextLLBoid == NULL){
+			break;
+		}
 		temp = temp->nextLLBoid;
 	}
 	return counter;
 }
-//[x]
-void LLBoidPrint(LLBoid *selfList){
+
+void LLBoidPrint(LLBoid *selfList, bool printPosition, bool printRotation){
 	LLBoid* temp = selfList;
 	int counter = 0;
 	while(1){
 		printf("%i: \n",counter);
-		printf("\trotation:\n");
-		printf("\t\tx::%i \t | \t %i\n",temp->content.rotation.x,temp->content.rotation.y);
-		printf("\n");
-		printf("\tposition:\n");
-		printf("\t\tx::%i \t | \t %i\n",temp->content.postion.x,temp->content.postion.y);
+		if(printRotation){
+			printf("\trotation:\n");
+			printf("\t\tx::%i \t | \ty::%i\n",temp->content.rotation.x,temp->content.rotation.y);
+			printf("\n");
+		}
+		if(printPosition){
+			printf("\tposition:\n");
+			printf("\t\tx::%i \t | \ty::%i\n",temp->content.postion.x,temp->content.postion.y);
+		}
+
 		if(temp->nextLLBoid == NULL){
 			break;
 		}
@@ -173,7 +194,7 @@ void LLBoidPrint(LLBoid *selfList){
 		counter++;
 	};
 }
-//[x]
+
 vec2 normalVec2(vec2 input){
 	/*
 		x**2 + y**2 = VECTOR_LENGTH**2 -> VECTOR_LENGTH = sqrt(x**2 + y**2)
@@ -223,7 +244,7 @@ vec2 normalVec2(vec2 input){
 	};
 	return returnValue;
 }
-//[x]
+
 vec2 avgRotFromLLBoid(LLBoid *self){
 	LLBoid* temp = self;
 	int counter = 1;
@@ -232,10 +253,13 @@ vec2 avgRotFromLLBoid(LLBoid *self){
 		.y = 0
 	};
 
-	while(temp->nextLLBoid != NULL){
+	while(1){
 		counter++;
 		sumOfRot.x += self->content.rotation.x;
 		sumOfRot.y += self->content.rotation.y;
+		if(temp->nextLLBoid == NULL){
+			break;
+		}
 		temp = temp->nextLLBoid;
 	}
 
@@ -245,7 +269,7 @@ vec2 avgRotFromLLBoid(LLBoid *self){
 	};
 	return returnValue;
 }
-//[x]
+
 vec2 avgPosFromLLBoid(LLBoid *self){
 	LLBoid* temp = self;
 	int counter = 1;
@@ -267,7 +291,7 @@ vec2 avgPosFromLLBoid(LLBoid *self){
 	};
 	return returnValue;
 }
-//[x]
+
 vec2 avgPositionDiff(LLBoid *selfList, boid self){
 	//get postion differen from own --> avg
 	//return
@@ -297,9 +321,11 @@ vec2 nextPosition(LLBoid *selfList, boid self){
 		.y = 0
 	};
 
+
+
 	//speration --> avgPosDif *-1 * factor
 	//allignment --> avg from avgRotation and self
-	//
+	//push to next postion
 
 	return temp;
 }

@@ -1,10 +1,11 @@
+
 #include <stdio.h>
 
 #include "boid.h"
 
 #define BOID_AMOUNT 50
 
-void test(){
+void LLBtest(){
 	LLBoid x = LLBoidStdConstr();
 
 	vec2 testVec = {
@@ -32,8 +33,7 @@ void test(){
 	printf("1 == %i\n",LLBoidLen(&x));
 }
 
-int main(){
-	//test();
+void LLBtestPop(){
 	vec2 rotationVector = {
 		.x = 20,
 		.y = 20
@@ -57,12 +57,41 @@ int main(){
 		x->postion = positionVector;
 		LLBoidAppend(&n,*x);
 	}
+	LLBoidPrint(&n, true, true);
+}
 
-	//LLBoidPop(&n,0);
+int main(){
+	vec2 rotationVector = {
+		.x = 20,
+		.y = 20
+	};
+	vec2 positionVector = {
+		.x = 1,
+		.y = 2
+	};
+	LLBoid n = LLBoidStdConstr();
 
-	LLBoidPrint(&n);
+	for(int i = 0; i < BOID_AMOUNT; i++){
+		boid *x = (boid*)malloc(sizeof(struct boid));
+		x->rotation = rotationVector;
+		x->postion = positionVector;
+		x->postion.x = i+1;
+		LLBoidAppend(&n,*x);
+	}
 
-	//LLBoidLen(&n);
+	LLBoid* temp = &n;
+	while(1){
+		vec2 tempVec = nextPosition(&n,temp->content);
+		temp->content.postion = tempVec;
+
+		if(temp->nextLLBoid == NULL){
+			break;
+		}
+		temp = temp->nextLLBoid;
+	}
+
+	LLBoidPrint(&n, true, false); 
+
 	//printf("%i\n",LLBoidLen(&n));
 
 	return 0;
