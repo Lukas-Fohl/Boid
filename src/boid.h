@@ -39,6 +39,6 @@ vec2 avgPosFromLLBoid(LLBoid *self);
 
 vec2 avgPositionDiff(LLBoid *selfList, boid self);
 
-vec2 nextPosition(LLBoid *selfList, boid self);
+boid nextPosition(LLBoid *selfList, boid self);
 
 #endif

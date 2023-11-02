@@ -315,7 +315,7 @@ vec2 avgPositionDiff(LLBoid *selfList, boid self){
 	return sumOfPos;
 }
 //[]
-vec2 nextPosition(LLBoid *selfList, boid self){
+boid nextPosition(LLBoid *selfList, boid self){
 	vec2 temp = {
 		.x = 0,
 		.y = 0
@@ -327,5 +327,5 @@ vec2 nextPosition(LLBoid *selfList, boid self){
 	//allignment --> avg from avgRotation and self
 	//push to next postion
 
-	return temp;
+	return self;
 }

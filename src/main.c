@@ -6,61 +6,54 @@
 #define BOID_AMOUNT 50
 
 void LLBtest(){
-	LLBoid x = LLBoidStdConstr();
-
-	vec2 testVec = {
-		.x = 1,
-		.y = 2
-	};
-
-	boid testBoid = {
-		.postion = testVec,
-		.rotation = testVec
-	};
-
-	LLBoidAppend(&x,testBoid);
-
-	printf("1 == %i\n",LLBoidGetAt(&x,1).content.postion.x);
-
-	testBoid.postion.x = 80;
-
-	LLBoidSetAt(&x,1,testBoid);
-
-	printf("80 == %i\n",LLBoidGetAt(&x,1).content.postion.x);
-
-	LLBoidPop(&x,1);
-
-	printf("1 == %i\n",LLBoidLen(&x));
-}
-
-void LLBtestPop(){
-	vec2 rotationVector = {
-		.x = 20,
-		.y = 20
-	};
-
-	vec2 positionVector = {
-		.x = 1,
-		.y = 2
-	};
-
-	LLBoid n = LLBoidStdConstr();
-
-	for(int i = 0; i < BOID_AMOUNT; i++){
-		if(i == 48){
-			rotationVector.x = 5;
-		}else{
-			rotationVector.x = 20;
-		}
-		boid *x = (boid*)malloc(sizeof(struct boid));
-		x->rotation = rotationVector;
-		x->postion = positionVector;
-		LLBoidAppend(&n,*x);
+	if(LLBoidStdConstr().nextLLBoid == NULL && LLBoidStdConstr().content.postion.x == 0){
+		printf("\t \033[32m [Test] LLBoidStdConstr passed ✓ \033[0m \n");
+	}else{
+		printf("\t \033[31m [Test] LLBoidStdConstr failed ✗ \033[0m \n");
 	}
-	LLBoidPrint(&n, true, true);
+
+	LLBoid LLBTestVar = LLBoidStdConstr();
+	LLBoidAppend(&LLBTestVar,boidStdConstr());
+
+	if(LLBoidGetAt(&LLBTestVar,1).nextLLBoid == NULL && LLBoidGetAt(&LLBTestVar,1).content.postion.x == 0){
+		printf("\t \033[32m [Test] LLBoidAppend passed ✓ \033[0m \n");
+	}else{
+		printf("\t \033[31m [Test] LLBoidAppend failed ✗ \033[0m \n");
+	}
+
+	boid testBoidVar = boidStdConstr();
+	testBoidVar.postion.x = 5;
+	LLBoidSetAt(&LLBTestVar,1,testBoidVar);
+	if(LLBoidGetAt(&LLBTestVar,1).nextLLBoid == NULL && LLBoidGetAt(&LLBTestVar,1).content.postion.x == 5){
+		printf("\t \033[32m [Test] LLBoidGetAt passed ✓ \033[0m \n");
+	}else{
+		printf("\t \033[31m [Test] LLBoidGetAt failed ✗ \033[0m \n");
+	}
+
+	testBoidVar.postion.y = 20;
+	LLBoidSetAt(&LLBTestVar,1,testBoidVar);
+	if(LLBoidGetAt(&LLBTestVar,1).content.postion.y == 20){
+		printf("\t \033[32m [Test] LLBoidSetAt passed ✓ \033[0m \n");
+	}else{
+		printf("\t \033[31m [Test] LLBoidSetAt failed ✗ \033[0m \n");
+	}
+
+	LLBoidPop(&LLBTestVar,1);
+	if(LLBTestVar.nextLLBoid == NULL){
+		printf("\t \033[32m [Test] LLBoidPop passed ✓ \033[0m \n");
+	}else{
+		printf("\t \033[31m [Test] LLBoidPop failed ✗ \033[0m \n");
+	}
+
+	if(LLBoidLen(&LLBTestVar) == 1){
+		printf("\t \033[32m [Test] LLBoidLen passed ✓ \033[0m \n");
+	}else{
+		printf("\t \033[31m [Test] LLBoidLen failed ✗ \033[0m \n");
+	}
 }
 
-int main(){
+LLBoid makeLLBoid(){
+	//create boidList
 	vec2 rotationVector = {
 		.x = 20,
 		.y = 20
@@ -69,30 +62,32 @@ int main(){
 		.x = 1,
 		.y = 2
 	};
-	LLBoid n = LLBoidStdConstr();
+	LLBoid reVal = LLBoidStdConstr();
 
-	for(int i = 0; i < BOID_AMOUNT; i++){
+	for(int i = 0; i < BOID_AMOUNT-1; i++){
 		boid *x = (boid*)malloc(sizeof(struct boid));
 		x->rotation = rotationVector;
 		x->postion = positionVector;
 		x->postion.x = i+1;
-		LLBoidAppend(&n,*x);
+		LLBoidAppend(&reVal,*x);
 	}
+	return reVal;
+}
 
-	LLBoid* temp = &n;
+int main(){
+	LLBtest();
+	LLBoid list = makeLLBoid();
+	//LLBoidPrint(&list, true, true);
+
+	LLBoid* temp = &list;
 	while(1){
-		vec2 tempVec = nextPosition(&n,temp->content);
-		temp->content.postion = tempVec;
-
+		//vec2 tempVec = nextPosition(&list,temp->content);
+		//temp->content.postion = tempVec;
 		if(temp->nextLLBoid == NULL){
 			break;
 		}
 		temp = temp->nextLLBoid;
 	}
-
-	LLBoidPrint(&n, true, false); 
-
-	//printf("%i\n",LLBoidLen(&n));
 
 	return 0;
 }
