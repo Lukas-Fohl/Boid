@@ -11,6 +11,13 @@ build:
 	$(stdInit)
 	$(comp)
 
+SHELL := /bin/bash
+
+time:
+	$(stdInit)
+	$(comp)
+	time ../build/$(exeFile)
+
 define stdInit
 endef
 

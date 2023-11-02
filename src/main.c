@@ -3,7 +3,7 @@
 
 #include "boid.h"
 
-#define BOID_AMOUNT 50
+#define BOID_AMOUNT 1000
 
 void LLBtest(){
 	if(LLBoidStdConstr().nextLLBoid == NULL && LLBoidStdConstr().content.postion.x == 0){
@@ -68,26 +68,30 @@ LLBoid makeLLBoid(){
 		boid *x = (boid*)malloc(sizeof(struct boid));
 		x->rotation = rotationVector;
 		x->postion = positionVector;
-		x->postion.x = i+1;
+		x->rotation.x = i+1;
+		x->rotation.y = i/2+1;
 		LLBoidAppend(&reVal,*x);
 	}
 	return reVal;
 }
 
 int main(){
-	LLBtest();
+	//LLBtest();
 	LLBoid list = makeLLBoid();
-	//LLBoidPrint(&list, true, true);
 
 	LLBoid* temp = &list;
-	while(1){
-		//vec2 tempVec = nextPosition(&list,temp->content);
-		//temp->content.postion = tempVec;
-		if(temp->nextLLBoid == NULL){
-			break;
+	for(int i = 0; i < 24; i++){
+		while(1){
+			temp->content = nextPosition(&list,temp->content);
+			if(temp->nextLLBoid == NULL){
+				break;
+			}
+			temp = temp->nextLLBoid;
 		}
-		temp = temp->nextLLBoid;
+		temp = &list;
 	}
+
+	//LLBoidPrint(&list, true, false);
 
 	return 0;
 }

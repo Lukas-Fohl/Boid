@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #define VECTOR_LENGTH 10
+#define POS_DIFF_FACTOR 1
 
 typedef struct vec2{
 	int x,y;
@@ -255,8 +256,8 @@ vec2 avgRotFromLLBoid(LLBoid *self){
 
 	while(1){
 		counter++;
-		sumOfRot.x += self->content.rotation.x;
-		sumOfRot.y += self->content.rotation.y;
+		sumOfRot.x += temp->content.rotation.x;
+		sumOfRot.y += temp->content.rotation.y;
 		if(temp->nextLLBoid == NULL){
 			break;
 		}
@@ -280,8 +281,8 @@ vec2 avgPosFromLLBoid(LLBoid *self){
 
 	while(temp->nextLLBoid != NULL){
 		counter++;
-		sumOfPos.x += self->content.postion.x;
-		sumOfPos.y += self->content.postion.y;
+		sumOfPos.x += temp->content.postion.x;
+		sumOfPos.y += temp->content.postion.y;
 		temp = temp->nextLLBoid;
 	}
 
@@ -293,8 +294,6 @@ vec2 avgPosFromLLBoid(LLBoid *self){
 }
 
 vec2 avgPositionDiff(LLBoid *selfList, boid self){
-	//get postion differen from own --> avg
-	//return
 	LLBoid* temp = selfList;
 	int counter = 0;
 	vec2 sumOfPos = {
@@ -302,10 +301,13 @@ vec2 avgPositionDiff(LLBoid *selfList, boid self){
 		.y = 0
 	};
 
-	while(temp->nextLLBoid != NULL){
+	while(1){
 		counter++;
-		sumOfPos.x += abs( self.postion.x - selfList->content.postion.x );
-		sumOfPos.y += abs( self.postion.y - selfList->content.postion.y );
+		sumOfPos.x += abs( self.postion.x - temp->content.postion.x );
+		sumOfPos.y += abs( self.postion.y - temp->content.postion.y );
+		if(temp->nextLLBoid == NULL){
+			break;
+		}
 		temp = temp->nextLLBoid;
 	}
 
@@ -314,18 +316,34 @@ vec2 avgPositionDiff(LLBoid *selfList, boid self){
 
 	return sumOfPos;
 }
-//[]
+
 boid nextPosition(LLBoid *selfList, boid self){
-	vec2 temp = {
-		.x = 0,
-		.y = 0
-	};
 
-
-
-	//speration --> avgPosDif *-1 * factor
 	//allignment --> avg from avgRotation and self
+	//--> add
+	vec2 tempRota = self.rotation;
+
+	vec2 avgRota = avgRotFromLLBoid(selfList);
+
+	tempRota.x = (tempRota.x + avgRota.x) / 2;
+	tempRota.y = (tempRota.y + avgRota.y) / 2;
+	tempRota = normalVec2(tempRota);
+
+	//speration --> avgPosDif * -1 * factor
+	//--> add
+	vec2 tempPos = self.postion;
+
+	vec2 avgPosDiff = avgPositionDiff(selfList, self);
+
+	tempPos.x = (tempPos.x - avgPosDiff.x * POS_DIFF_FACTOR);
+	tempPos.y = (tempPos.y - avgPosDiff.y * POS_DIFF_FACTOR);
+
+	//add position from rotation vector
+	//--> change rotation vector
+	tempPos.x += (int)tempRota.x;
+	tempPos.y += (int)tempRota.y;
+
 	//push to next postion
 
-	return self;
+	return boidConstr(tempPos, tempRota);
 }
