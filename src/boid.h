@@ -37,6 +37,8 @@ vec2 avgRotFromLLBoid(LLBoid *self);
 
 vec2 avgPositionDiff(LLBoid *selfList, boid self);
 
+boid avgPosRotFromLLBoid(LLBoid *selfList, boid self);
+
 boid nextPosition(LLBoid *selfList, boid self);
 
 #endif

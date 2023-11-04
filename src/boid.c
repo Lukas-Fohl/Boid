@@ -300,16 +300,38 @@ boid avgPosRotFromLLBoid(LLBoid *selfList, boid self){
 	LLBoid* temp = selfList;
 	int counter = 0;
 
+	vec2 sumOfPos = {
+		.x = 0,
+		.y = 0
+	};
+
+	vec2 sumOfRot = {
+		.x = 0,
+		.y = 0
+	};
+
 	while(1){
-
-		//the calc
-
 		counter++;
+
+		//pos:
+		sumOfPos.x += abs( self.postion.x - temp->content.postion.x );
+		sumOfPos.y += abs( self.postion.y - temp->content.postion.y );
+
+		//rot:
+		sumOfRot.x += temp->content.rotation.x;
+		sumOfRot.y += temp->content.rotation.y;
+
 		if(temp->nextLLBoid == NULL){
 			break;
 		}
 		temp = temp->nextLLBoid;
 	}
+
+	reval.postion.x = sumOfPos.x/counter;
+	reval.postion.y = sumOfPos.y/counter;
+
+	reval.rotation.x = sumOfRot.x/counter;
+	reval.rotation.y = sumOfRot.y/counter;
 
 	return reval;
 }
@@ -320,8 +342,10 @@ boid nextPosition(LLBoid *selfList, boid self){
 	//--> add
 	vec2 tempRota = self.rotation;
 
-	vec2 avgRota = avgRotFromLLBoid(selfList); //--> we lose speed
-	//vec2 avgRota = {.x = 0, .y = 0};
+	boid avg = avgPosRotFromLLBoid(selfList,self);
+
+	//vec2 avgRota = avgRotFromLLBoid(selfList); //--> we lose speed
+	vec2 avgRota = avg.rotation;
 
 	tempRota.x = (tempRota.x + avgRota.x) / 2;
 	tempRota.y = (tempRota.y + avgRota.y) / 2;
@@ -331,8 +355,8 @@ boid nextPosition(LLBoid *selfList, boid self){
 	//--> add
 	vec2 tempPos = self.postion;
 
-	vec2 avgPosDiff = avgPositionDiff(selfList, self); //--> we lose speed
-	//vec2 avgPosDiff = {.x = 0, .y = 0};
+	//vec2 avgPosDiff = avgPositionDiff(selfList, self); //--> we lose speed
+	vec2 avgPosDiff = avg.postion;
 
 	tempPos.x = (tempPos.x - avgPosDiff.x * POS_DIFF_FACTOR);
 	tempPos.y = (tempPos.y - avgPosDiff.y * POS_DIFF_FACTOR);

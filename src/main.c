@@ -76,7 +76,7 @@ LLBoid makeLLBoid(){
 	return reVal;
 }
 
-int mainLoop(){
+int mainLoopTime(){
 	LLBoid list = makeLLBoid();
 
 	LLBoid* temp = &list;
@@ -93,25 +93,60 @@ int mainLoop(){
 		}
 		temp = &list;
 	}
+
+	for(int i = 0; i < BOID_AMOUNT; i++){
+		//LLBoidPop(&list,i);
+	}
+
 	gettimeofday(&stop, NULL);
 	return((stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec)/1000; 
 }
 
-int main(){
+void speedTest(){
 	int samples = 200;
 	int sum = 0;
 	int printCounter = 0;
+
 	printf(".");
 	fflush(stdout);
+
 	for(int i = 0; i < samples; i++){
+
 		if((int)(((double)(((double)i/(double)samples)*100.0))/10.0) > printCounter){
 			printf(".");
 			fflush(stdout);
 			printCounter++;
 		}
-		sum += mainLoop();
-	}
-	printf("\nit took %i ms\n", sum/samples); 
 
+		sum += mainLoopTime();
+	}
+
+	printf("\nit took %i ms\n", sum/samples); 
+}
+
+void mainLoop(){
+	LLBoid list = makeLLBoid();
+
+	LLBoid* temp = &list;
+
+	while(1){
+		temp->content = nextPosition(&list,temp->content);
+
+		if(temp->nextLLBoid == NULL){
+			break;
+		}
+
+		temp = temp->nextLLBoid;
+	}
+
+	for(int i = 0; i < BOID_AMOUNT; i++){
+		//LLBoidPop(&list,i);
+	}
+}
+
+int main(){
+	//speedTest();
+	//LLBtest();
+	mainLoop();
 	return 0;
 }
