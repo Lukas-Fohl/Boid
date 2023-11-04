@@ -2,8 +2,11 @@
 #include <stdio.h>
 #include <sys/time.h>
 
+#include <raylib.h>
+
 #include "boid.h"
 
+//#define BOID_AMOUNT 10
 #define BOID_AMOUNT 1000
 
 void LLBtest(){
@@ -129,24 +132,63 @@ void mainLoop(){
 
 	LLBoid* temp = &list;
 
-	while(1){
-		temp->content = nextPosition(&list,temp->content);
+	bool running = true;
 
-		if(temp->nextLLBoid == NULL){
-			break;
+	//raylib init
+
+	const int screenWidth = 800;
+    const int screenHeight = 800;
+
+    InitWindow(screenWidth, screenHeight, "my boids");
+
+	while(!WindowShouldClose()){
+		ClearBackground(BLACK);
+		while(1){
+			temp->content = nextPosition(&list,temp->content);
+			//raylib draw pixel
+
+			BeginDrawing();
+
+			DrawPixel(temp->content.postion.x,temp->content.postion.y,WHITE);
+
+			EndDrawing();
+
+			if(temp->nextLLBoid == NULL){
+				break;
+			}
+
+			temp = temp->nextLLBoid;
 		}
-
-		temp = temp->nextLLBoid;
 	}
 
-	for(int i = 0; i < BOID_AMOUNT; i++){
-		//LLBoidPop(&list,i);
+	for(int i = 0; i < BOID_AMOUNT-1; i++){
+		LLBoidPop(&list,i);
 	}
+	//LLBoidPrint(&list, true, true);
+}
+
+void nextPosTest(){
+	LLBoid list = makeLLBoid();
+
+	LLBoid* temp = &list;
+
+	for(int i = 0; i < 10; i++){
+		while(1){
+			temp->content = nextPosition(&list,temp->content);
+			if(temp->nextLLBoid == NULL){
+				break;
+			}
+			temp = temp->nextLLBoid;
+		}
+		temp = &list;
+	}
+	LLBoidPrint(&list, true, true);
 }
 
 int main(){
 	//speedTest();
 	//LLBtest();
 	mainLoop();
+	//nextPosTest();
 	return 0;
 }

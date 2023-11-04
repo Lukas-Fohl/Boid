@@ -3,8 +3,8 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define VECTOR_LENGTH 10
-#define POS_DIFF_FACTOR 1
+#define VECTOR_LENGTH 12
+#define POS_DIFF_FACTOR 0.5
 
 typedef struct vec2{
 	int x,y;
@@ -358,22 +358,15 @@ boid nextPosition(LLBoid *selfList, boid self){
 	//vec2 avgPosDiff = avgPositionDiff(selfList, self); //--> we lose speed
 	vec2 avgPosDiff = avg.postion;
 
-	tempPos.x = (tempPos.x - avgPosDiff.x * POS_DIFF_FACTOR);
-	tempPos.y = (tempPos.y - avgPosDiff.y * POS_DIFF_FACTOR);
+	tempPos.x = (int)( (double)tempPos.x + ((double)avgPosDiff.x * (double)POS_DIFF_FACTOR));
+	tempPos.y = (int)( (double)tempPos.y + ((double)avgPosDiff.y * (double)POS_DIFF_FACTOR));
 
 	//add position from rotation vector
 	//--> change rotation vector
-	tempPos.x += (int)tempRota.x;
-	tempPos.y += (int)tempRota.y;
+	tempPos.x += (int)tempRota.x * 2;
+	tempPos.y += (int)tempRota.y * 2;
 
 	//push to next postion
 
 	return boidConstr(tempPos, tempRota);
 }
-
-/*
-TODO:
-	combine avgPosDiff && avgRotFromLLBoid
-	--> only iter once
-	--> speed
-*/

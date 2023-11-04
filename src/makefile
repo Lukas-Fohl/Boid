@@ -22,7 +22,7 @@ define stdInit
 endef
 
 define comp
-	gcc -o ../build/$(exeFile) $(runFile) -O2 -std=c99 -lm
+	gcc -o ../build/$(exeFile) $(runFile) -O2 -std=c99 -lm -lraylib -lGL -lm -pthread -ldl
 endef
 
 define run
