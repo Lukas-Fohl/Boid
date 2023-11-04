@@ -1,5 +1,6 @@
-
+#include <stdlib.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 #include "boid.h"
 
@@ -75,11 +76,13 @@ LLBoid makeLLBoid(){
 	return reVal;
 }
 
-int main(){
-	//LLBtest();
+int mainLoop(){
 	LLBoid list = makeLLBoid();
 
 	LLBoid* temp = &list;
+
+	struct timeval stop, start;
+	gettimeofday(&start, NULL);
 	for(int i = 0; i < 24; i++){
 		while(1){
 			temp->content = nextPosition(&list,temp->content);
@@ -90,8 +93,25 @@ int main(){
 		}
 		temp = &list;
 	}
+	gettimeofday(&stop, NULL);
+	return((stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec)/1000; 
+}
 
-	//LLBoidPrint(&list, true, false);
+int main(){
+	int samples = 200;
+	int sum = 0;
+	int printCounter = 0;
+	printf(".");
+	fflush(stdout);
+	for(int i = 0; i < samples; i++){
+		if((int)(((double)(((double)i/(double)samples)*100.0))/10.0) > printCounter){
+			printf(".");
+			fflush(stdout);
+			printCounter++;
+		}
+		sum += mainLoop();
+	}
+	printf("\nit took %i ms\n", sum/samples); 
 
 	return 0;
 }
