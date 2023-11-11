@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define VECTOR_LENGTH 12
+#define VECTOR_LENGTH 5
 #define POS_DIFF_FACTOR 0.5
 
 typedef struct vec2{
@@ -197,6 +197,11 @@ void LLBoidPrint(LLBoid *selfList, bool printPosition, bool printRotation){
 }
 
 vec2 normalVec2(vec2 input){
+	input.x = (input.y == 0)?VECTOR_LENGTH:input.x;
+	input.y = (input.x == 0)?VECTOR_LENGTH:input.y;
+	if(input.x == 0 || input.y ==0){
+		return input;
+	}
 	/*
 		x**2 + y**2 = VECTOR_LENGTH**2 -> VECTOR_LENGTH = sqrt(x**2 + y**2)
 		ratio * y = x
@@ -299,27 +304,18 @@ boid avgPosRotFromLLBoid(LLBoid *selfList, boid self){
 	boid reval = boidStdConstr();
 	LLBoid* temp = selfList;
 	int counter = 0;
-
-	vec2 sumOfPos = {
-		.x = 0,
-		.y = 0
-	};
-
-	vec2 sumOfRot = {
-		.x = 0,
-		.y = 0
-	};
+	long sumOfPosY,sumOfPosX,sumOfRotX,sumOfRotY = 0;
 
 	while(1){
 		counter++;
 
 		//pos:
-		sumOfPos.x += abs( self.postion.x - temp->content.postion.x );
-		sumOfPos.y += abs( self.postion.y - temp->content.postion.y );
+		sumOfPosX += (long)abs( self.postion.x - temp->content.postion.x );
+		sumOfPosY += (long)abs( self.postion.y - temp->content.postion.y );
 
 		//rot:
-		sumOfRot.x += temp->content.rotation.x;
-		sumOfRot.y += temp->content.rotation.y;
+		sumOfRotX += (long)temp->content.rotation.x;
+		sumOfRotY += (long)temp->content.rotation.y;
 
 		if(temp->nextLLBoid == NULL){
 			break;
@@ -327,11 +323,11 @@ boid avgPosRotFromLLBoid(LLBoid *selfList, boid self){
 		temp = temp->nextLLBoid;
 	}
 
-	reval.postion.x = sumOfPos.x/counter;
-	reval.postion.y = sumOfPos.y/counter;
+	reval.postion.x = ((int)sumOfPosX)/counter;
+	reval.postion.y = ((int)sumOfPosY)/counter;
 
-	reval.rotation.x = sumOfRot.x/counter;
-	reval.rotation.y = sumOfRot.y/counter;
+	reval.rotation.x = ((int)sumOfRotX)/counter;
+	reval.rotation.y = ((int)sumOfRotY)/counter;
 
 	return reval;
 }
@@ -347,8 +343,8 @@ boid nextPosition(LLBoid *selfList, boid self){
 	//vec2 avgRota = avgRotFromLLBoid(selfList); //--> we lose speed
 	vec2 avgRota = avg.rotation;
 
-	tempRota.x = (tempRota.x + avgRota.x) / 2;
-	tempRota.y = (tempRota.y + avgRota.y) / 2;
+	tempRota.x = (tempRota.x + avgRota.x / 1) / 2;
+	tempRota.y = (tempRota.y + avgRota.y / 1) / 2;
 	tempRota = normalVec2(tempRota);
 
 	//speration --> avgPosDif * -1 * factor

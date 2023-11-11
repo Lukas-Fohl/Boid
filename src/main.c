@@ -72,8 +72,9 @@ LLBoid makeLLBoid(){
 		boid *x = (boid*)malloc(sizeof(struct boid));
 		x->rotation = rotationVector;
 		x->postion = positionVector;
-		x->rotation.x = i+1;
+		x->rotation.x = i/2+1;
 		x->rotation.y = i/2+1;
+		x->rotation = normalVec2(x->rotation);
 		LLBoidAppend(&reVal,*x);
 	}
 	return reVal;
@@ -98,7 +99,7 @@ int mainLoopTime(){
 	}
 
 	for(int i = 0; i < BOID_AMOUNT; i++){
-		//LLBoidPop(&list,i);
+		LLBoidPop(&list,i);
 	}
 
 	gettimeofday(&stop, NULL);
@@ -137,21 +138,24 @@ void mainLoop(){
 	//raylib init
 
 	const int screenWidth = 800;
-    const int screenHeight = 800;
+	const int screenHeight = 800;
 
-    InitWindow(screenWidth, screenHeight, "my boids");
+	InitWindow(screenWidth, screenHeight, "my boids");
 
 	while(!WindowShouldClose()){
 		ClearBackground(BLACK);
+		struct timeval stop, start;
+		gettimeofday(&start, NULL);
+		BeginDrawing();
 		while(1){
+
 			temp->content = nextPosition(&list,temp->content);
 			//raylib draw pixel
-
-			BeginDrawing();
-
-			DrawPixel(temp->content.postion.x,temp->content.postion.y,WHITE);
-
-			EndDrawing();
+			double factor = 0.00015;//0.00001, 0.00015, 0.01
+			int x = ((double) temp->content.postion.x * factor);
+			int y = ((double) temp->content.postion.y * factor);
+			//printf("%i\n",temp->content.postion.x);
+			DrawPixel(x,y,WHITE);
 
 			if(temp->nextLLBoid == NULL){
 				break;
@@ -159,6 +163,12 @@ void mainLoop(){
 
 			temp = temp->nextLLBoid;
 		}
+		temp = &list;
+		gettimeofday(&stop, NULL);
+		while((((stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec)/1000) < 16){
+			gettimeofday(&stop, NULL);
+		}
+		EndDrawing();
 	}
 
 	for(int i = 0; i < BOID_AMOUNT-1; i++){
