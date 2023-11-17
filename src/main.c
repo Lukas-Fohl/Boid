@@ -72,8 +72,8 @@ LLBoid makeLLBoid(){
 		boid *x = (boid*)malloc(sizeof(struct boid));
 		x->rotation = rotationVector;
 		x->postion = positionVector;
-		x->rotation.x = i/2+1;
-		x->rotation.y = i/2+1;
+		x->rotation.x = (int)(((double)i/2.0+1.0)*0.53);
+		x->rotation.y = (int)(((double)i/2.0+1.0)*3);
 		x->rotation = normalVec2(x->rotation);
 		LLBoidAppend(&reVal,*x);
 	}
@@ -151,7 +151,7 @@ void mainLoop(){
 
 			temp->content = nextPosition(&list,temp->content);
 			//raylib draw pixel
-			double factor = 0.00015;//0.00001, 0.00015, 0.01
+			double factor = 1;//0.00001, 0.00015, 0.01
 			int x = ((double) temp->content.postion.x * factor);
 			int y = ((double) temp->content.postion.y * factor);
 			//printf("%i\n",temp->content.postion.x);
@@ -165,7 +165,7 @@ void mainLoop(){
 		}
 		temp = &list;
 		gettimeofday(&stop, NULL);
-		while((((stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec)/1000) < 16){
+		while((((stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec)/1000) < 50){
 			gettimeofday(&stop, NULL);
 		}
 		EndDrawing();

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define VECTOR_LENGTH 5
+#define VECTOR_LENGTH 4
 #define POS_DIFF_FACTOR 0.5
 
 typedef struct vec2{
@@ -343,8 +343,8 @@ boid nextPosition(LLBoid *selfList, boid self){
 	//vec2 avgRota = avgRotFromLLBoid(selfList); //--> we lose speed
 	vec2 avgRota = avg.rotation;
 
-	tempRota.x = (tempRota.x + avgRota.x / 1) / 2;
-	tempRota.y = (tempRota.y + avgRota.y / 1) / 2;
+	tempRota.x = (tempRota.x + avgRota.x) / 2;
+	tempRota.y = (tempRota.y + avgRota.y) / 2;
 	tempRota = normalVec2(tempRota);
 
 	//speration --> avgPosDif * -1 * factor
@@ -352,7 +352,7 @@ boid nextPosition(LLBoid *selfList, boid self){
 	vec2 tempPos = self.postion;
 
 	//vec2 avgPosDiff = avgPositionDiff(selfList, self); //--> we lose speed
-	vec2 avgPosDiff = avg.postion;
+	vec2 avgPosDiff = normalVec2(avg.postion);
 
 	tempPos.x = (int)( (double)tempPos.x + ((double)avgPosDiff.x * (double)POS_DIFF_FACTOR));
 	tempPos.y = (int)( (double)tempPos.y + ((double)avgPosDiff.y * (double)POS_DIFF_FACTOR));
